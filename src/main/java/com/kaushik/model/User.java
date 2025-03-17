@@ -4,7 +4,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -16,15 +19,25 @@ public class User {
     private Long Id;
     private String fullName;
 
+    @NotBlank(message = "userName is required")
+    private String userName;
+
     @NotBlank(message = "Email is mandatory")
+    @Email(message = "Email should be valid")
     private String email;
 
     private String phone;
 
     @NotBlank(message = "Password is mandatory")
     private String password;
+
+    @NotBlank(message = "Role is mandatory")
     private String role;
+
+    @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
 
@@ -32,15 +45,25 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String fullName, String email, String phone, String password, String role, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public User(Long id, String fullName, String userName, String email, String phone, String password, String role, LocalDateTime createdAt, LocalDateTime updatedAt) {
         Id = id;
         this.fullName = fullName;
+        this.userName = userName;
         this.email = email;
         this.phone = phone;
         this.password = password;
         this.role = role;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public @NotBlank(message = "userName is required") String getUserName() {
+        return userName;
+    }
+
+
+    public void setUserName(@NotBlank(message = "userName is required") String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {
