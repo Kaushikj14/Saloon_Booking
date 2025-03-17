@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDateTime;
 
@@ -14,8 +15,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long Id;
     private String fullName;
+
+    @NotBlank(message = "Email is mandatory")
     private String email;
+
     private String phone;
+
+    @NotBlank(message = "Password is mandatory")
     private String password;
     private String role;
     private LocalDateTime createdAt;
