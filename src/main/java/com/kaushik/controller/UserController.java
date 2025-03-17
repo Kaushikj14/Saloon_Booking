@@ -22,6 +22,7 @@ public class UserController {
         return userRepository.save(user);
     }
 
+//    get all users
     @GetMapping("/api/users")
     public List<User> getUsers(){
         List<User> allUsers = userRepository.findAll();
