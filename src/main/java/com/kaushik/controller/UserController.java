@@ -1,5 +1,6 @@
 package com.kaushik.controller;
 
+import com.kaushik.exception.UserException;
 import com.kaushik.model.User;
 import com.kaushik.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -34,9 +35,9 @@ public class UserController {
         Optional<User> user = userRepository.findById(id);
         if(user.isPresent()){
             return user.get();
-        }else{
-            throw new Exception("User not found");
         }
+        throw new UserException("User not found");
+
 
     }
 
@@ -53,14 +54,14 @@ public class UserController {
             userRepository.save(existingUser);
             return existingUser;
         }
-        throw new Exception("User is not avaiable");
+        throw new UserException("User is not avaiable");
     }
 
     @DeleteMapping("/api/user/{id}")
     public String deleteUserById(@PathVariable Long id) throws Exception{
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()){
-            throw new Exception("User is not avaiable in db");
+            throw new UserException("User is not avaiable in db");
         }
         userRepository.deleteById(user.get().getId());
         return "User is deleted sucessfully";
