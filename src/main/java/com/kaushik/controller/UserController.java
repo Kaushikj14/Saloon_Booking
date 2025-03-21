@@ -3,8 +3,11 @@ package com.kaushik.controller;
 import com.kaushik.exception.UserException;
 import com.kaushik.model.User;
 import com.kaushik.repository.UserRepository;
+import com.kaushik.service.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,58 +15,48 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @RestController
 public class UserController {
 
-    @Autowired
-    private UserRepository userRepository;
+
+    private final UserService userService;
 
     @PostMapping("/api/users")
-    public User createUser(@RequestBody @Valid User user){
-        return userRepository.save(user);
+    public ResponseEntity<User> createUser(@RequestBody @Valid User user){
+
+        User createdUser = userService.createUser(user);
+
+        return new ResponseEntity<>(createdUser,HttpStatus.CREATED);
     }
 
 //    get all users
     @GetMapping("/api/users")
-    public List<User> getUsers(){
-        List<User> allUsers = userRepository.findAll();
-        return allUsers;
+    public ResponseEntity<List<User>> getUsers(){
+
+        List<User> users = userService.getAllUsers();
+        return new ResponseEntity<>(users,HttpStatus.OK);
+
     }
 
     @GetMapping("/api/user/{id}")
-    public User findUserById(@PathVariable Long id) throws Exception{
-        Optional<User> user = userRepository.findById(id);
-        if(user.isPresent()){
-            return user.get();
-        }
-        throw new UserException("User not found");
+    public ResponseEntity<User> findUserById(@PathVariable Long id) throws Exception{
 
+        User user = userService.getUserById(id);
+        return new ResponseEntity<>(user,HttpStatus.OK);
 
     }
 
 
     @PutMapping("/api/user/{id}")
-    public User updatedUser(@RequestBody User user,@PathVariable Long id) throws Exception{
-        Optional<User> user1 = userRepository.findById(id);
-        if (user1.isPresent()){
-            User existingUser = user1.get();
-            existingUser.setFullName(user.getFullName());
-            existingUser.setEmail(user.getEmail());
-            existingUser.setPhone(user.getPhone());
-            existingUser.setRole(user.getRole());
-            userRepository.save(existingUser);
-            return existingUser;
-        }
-        throw new UserException("User is not avaiable");
+    public ResponseEntity<User> updatedUser(@RequestBody User user,@PathVariable Long id) throws Exception{
+            User updatedUser = userService.updateUser(id,user);
+            return new ResponseEntity<>(updatedUser,HttpStatus.OK);
     }
 
     @DeleteMapping("/api/user/{id}")
-    public String deleteUserById(@PathVariable Long id) throws Exception{
-        Optional<User> user = userRepository.findById(id);
-        if (user.isEmpty()){
-            throw new UserException("User is not avaiable in db");
-        }
-        userRepository.deleteById(user.get().getId());
-        return "User is deleted sucessfully";
+    public ResponseEntity<String> deleteUserById(@PathVariable Long id) throws Exception{
+            userService.deleteUser(id);
+            return new ResponseEntity<>("User deleted",HttpStatus.ACCEPTED);
     }
 }
